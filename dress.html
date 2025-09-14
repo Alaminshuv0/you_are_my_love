@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dress Gallery</title>
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: #f8f8f8;
+        margin: 0;
+        padding: 0;
+    }
+
+    header {
+        text-align: center;
+        padding: 20px;
+        background: #25283b;
+        color: #fff;
+    }
+
+    header h1 {
+        font-size: 2em;
+        margin-bottom: 5px;
+    }
+
+    header a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 1em;
+    }
+
+    .gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .gallery img, .gallery video {
+        width: 100%;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .gallery img:hover, .gallery video:hover {
+        transform: scale(1.05);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    }
+
+    /* FULLSCREEN MODAL */
+    .fullscreen {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.9);
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        z-index: 999;
+    }
+
+    .fullscreen img, .fullscreen video {
+        max-width: 90%;
+        max-height: 80%;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(255,255,255,0.3);
+    }
+
+    .fullscreen video {
+        background: #000;
+    }
+
+    .fullscreen .close-btn {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        font-size: 3em;
+        color: #fff;
+        cursor: pointer;
+        z-index: 1000;
+    }
+
+    .fullscreen .info-box {
+        margin-top: 20px;
+        text-align: center;
+        color: #fff;
+        max-width: 600px;
+    }
+
+    .fullscreen .info-box h2 {
+        margin-bottom: 10px;
+        font-size: 2em;
+    }
+
+    @media screen and (max-width: 767px) {
+        .gallery {
+            gap: 15px;
+        }
+    }
+</style>
+</head>
+<body>
+
+<header>
+    <h1>Dress Gallery</h1>
+    <a href="index.html">← Back to Home</a>
+</header>
+
+<div class="gallery" id="gallery"></div>
+
+<!-- FULLSCREEN MODAL -->
+<div class="fullscreen" id="fullscreen">
+    <span class="close-btn" id="closeBtn">&times;</span>
+    <div id="fullscreenContent"></div>
+    <div class="info-box">
+        <h2 id="imgTitle"></h2>
+        <p id="imgDesc"></p>
+    </div>
+</div>
+
+<script>
+    // Get folder from URL
+    function getFolder() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('folder') || 'all';
+    }
+
+    const folder = getFolder();
+
+    // Images + Videos for each folder
+    const imagesData = {};
+
+const folders = ['red','white','green','blue','black','yellow','pink','cyan','colorful'];
+
+// Create images + videos for each folder
+folders.forEach(color => {
+    imagesData[color] = [];
+
+    // Add 18 images
+    for (let i = 1; i <= 18; i++) {
+        imagesData[color].push({
+            src: `images/${color}/(${i}).png`,
+            title: `Princess ${color.charAt(0).toUpperCase() + color.slice(1)} ${i}`,
+            desc: `${color.charAt(0).toUpperCase() + color.slice(1)} dress #${i}`
+        });
+    }
+
+    // Add 18 videos
+    for (let i = 1; i <= 18; i++) {
+        imagesData[color].push({
+            src: `images/${color}/(${i}).mp4`,
+            title: `Princess ${color.charAt(0).toUpperCase() + color.slice(1)} Video ${i}`,
+            desc: `${color.charAt(0).toUpperCase() + color.slice(1)} video showcase #${i}`
+        });
+    }
+});
+
+// Combine all folders for 'all'
+imagesData['all'] = [];
+folders.forEach(color => {
+    imagesData['all'] = imagesData['all'].concat(imagesData[color]);
+});
+
+
+    const gallery = document.getElementById('gallery');
+    const data = imagesData[folder] || [];
+
+    data.forEach(item => {
+        let el;
+        if(item.src.endsWith('.mp4')){
+            el = document.createElement('video');
+            el.src = item.src;
+            el.controls = true;
+            el.loop = false;
+            el.muted = true; // autoplay requires muted
+        } else {
+            el = document.createElement('img');
+            el.src = item.src;
+            el.alt = item.title;
+            el.dataset.title = item.title;
+            el.dataset.desc = item.desc;
+        }
+        gallery.appendChild(el);
+    });
+
+    // FULLSCREEN MODAL
+    const fullscreen = document.getElementById("fullscreen");
+    const fullscreenContent = document.getElementById("fullscreenContent");
+    const imgTitle = document.getElementById("imgTitle");
+    const imgDesc = document.getElementById("imgDesc");
+    const closeBtn = document.getElementById("closeBtn");
+
+    gallery.addEventListener("click", (e) => {
+        let target = e.target;
+        if(target.tagName === "IMG" || target.tagName === "VIDEO"){
+            fullscreenContent.innerHTML = ""; // clear previous
+            let clone = target.cloneNode(true);
+            clone.style.width = "100%";
+            clone.style.height = "auto";
+            clone.controls = true;
+            clone.autoplay = target.tagName === "VIDEO";
+            fullscreenContent.appendChild(clone);
+
+            imgTitle.textContent = target.dataset.title || "";
+            imgDesc.textContent = target.dataset.desc || "";
+            fullscreen.style.display = "flex";
+        }
+    });
+
+    closeBtn.addEventListener("click", () => fullscreen.style.display = "none");
+    fullscreen.addEventListener("click", (e) => { if(e.target === fullscreen) fullscreen.style.display = "none"; });
+    document.addEventListener("keydown", (e) => { if(e.key === "Escape") fullscreen.style.display = "none"; });
+
+</script>
+</body>
+</html>

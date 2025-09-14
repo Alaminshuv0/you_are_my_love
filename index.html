@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dragon Gallery + Dress Banner</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.cdnfonts.com/css/ica-rubrik-black" rel="stylesheet">
+  <link href="https://fonts.cdnfonts.com/css/poppins" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #D2D2D2;
+      background-image:
+        repeating-linear-gradient(to right, transparent 0 100px, #25283b22 100px 101px),
+        repeating-linear-gradient(to bottom, transparent 0 100px, #25283b22 100px 101px);
+      font-family: Poppins, sans-serif;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      position: absolute;
+      width: min(1400px, 90vw);
+      top: 10%;
+      left: 50%;
+      height: 90%;
+      transform: translateX(-50%);
+      content: '';
+      background-image: url(images/bg.png);
+      background-size: 100%;
+      background-repeat: no-repeat;
+      background-position: top center;
+      pointer-events: none;
+    }
+
+    /* First Banner - Dragon Carousel */
+    .banner {
+      width: 100%;
+      height: 100vh;
+      text-align: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .banner .slider {
+      position: absolute;
+      width: 200px;
+      height: 250px;
+      top: 10%;
+      left: calc(50% - 100px);
+      transform-style: preserve-3d;
+      transform: perspective(1000px);
+      animation: autoRun 20s linear infinite;
+      z-index: 2;
+      transition: transform 1s ease, opacity 1s ease;
+    }
+
+    @keyframes autoRun {
+      from {
+        transform: perspective(1000px) rotateX(-16deg) rotateY(0deg);
+      }
+      to {
+        transform: perspective(1000px) rotateX(-16deg) rotateY(360deg);
+      }
+    }
+
+    .banner .slider:hover {
+      animation-play-state: paused;
+      cursor: pointer;
+    }
+
+    .banner .slider .item {
+      position: absolute;
+      inset: 0 0 0 0;
+      transform:
+        rotateY(calc((var(--position) - 1) * (360 / var(--quantity)) * 1deg))
+        translateZ(550px);
+    }
+
+    .banner .slider .item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      transition: transform 0.3s;
+    }
+
+    .banner .slider .item img:hover {
+      transform: scale(1.05);
+    }
+
+    .banner .content {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(1400px, 100vw);
+      height: max-content;
+      padding-bottom: 100px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1;
+    }
+
+    .banner .content h1 {
+      font-family: 'ICA Rubrik';
+      font-size: 16em;
+      line-height: 1em;
+      color: #25283B;
+      position: relative;
+    }
+
+    .banner .content h1::after {
+      position: absolute;
+      inset: 0 0 0 0;
+      content: attr(data-content);
+      z-index: 2;
+      -webkit-text-stroke: 2px #d2d2d2;
+      color: transparent;
+    }
+
+    .banner .content .author {
+      font-family: Poppins, sans-serif;
+      text-align: right;
+      max-width: 200px;
+    }
+
+    .banner .content h2 {
+      font-size: 1.5em;
+    }
+
+    .banner .content .model {
+      background-image: url(images/model.png);
+      width: 100%;
+      height: 75vh;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      background-size: auto 130%;
+      background-repeat: no-repeat;
+      background-position: top center;
+      z-index: 1;
+    }
+
+    /* Fullscreen modal */
+    .fullscreen {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.9);
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      z-index: 999;
+    }
+
+    .fullscreen img {
+      max-width: 90%;
+      max-height: 70%;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(255,255,255,0.3);
+    }
+
+    .fullscreen .info-box {
+      margin-top: 20px;
+      text-align: center;
+      color: #fff;
+      max-width: 600px;
+    }
+
+    .fullscreen .info-box h2 {
+      margin-bottom: 10px;
+      font-size: 2em;
+    }
+
+    .fullscreen .close-btn {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      font-size: 3em;
+      color: #fff;
+      cursor: pointer;
+      z-index: 1000;
+    }
+
+    /* New Section - Dress Banner */
+    .dress-banner {
+      width: 100%;
+      min-height: 100vh;
+      background: #111;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 80px 20px;
+    }
+
+    .dress-banner h1 {
+      color: #fff;
+      font-family: 'ICA Rubrik';
+      font-size: 4em;
+      margin-bottom: 50px;
+      text-align: center;
+    }
+
+    .dress-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    .dress-card {
+      height: 250px;
+      border-radius: 15px;
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .dress-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+    }
+
+    .dress-card span {
+      color: #fff;
+      font-size: 1.5em;
+      font-weight: bold;
+      z-index: 2;
+      text-shadow: 0 3px 6px rgba(0,0,0,0.5);
+    }
+
+    .dress-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      filter: brightness(0.6);
+      transition: filter 0.3s ease;
+    }
+
+    .dress-card:hover::before {
+      filter: brightness(0.9);
+    }
+
+    .dress-card.red::before { background-image: url(images/red/cover.jpg); }
+.dress-card.white::before { background-image: url(images/white/cover.jpg); }
+.dress-card.green::before { background-image: url(images/green/cover.jpg); }
+.dress-card.blue::before { background-image: url(images/blue/cover.jpg); }
+.dress-card.black::before { background-image: url(images/black/cover.jpg); }
+.dress-card.yellow::before { background-image: url(images/yellow/cover.jpg); }
+.dress-card.pink::before { background-image: url(images/pink/cover.jpg); }
+.dress-card.cyan::before { background-image: url(images/cyan/cover.jpg); }
+.dress-card.colorful::before { background-image: url(images/colorful/cover.jpg); }
+.dress-card.all::before { background-image: url(images/all/cover.jpg); }
+
+
+    /* Responsive */
+    @media screen and (max-width: 1023px) {
+      .banner .slider {
+        width: 160px;
+        height: 200px;
+        left: calc(50% - 80px);
+      }
+      .banner .slider .item {
+        transform: rotateY(calc((var(--position) - 1) * (360 / var(--quantity)) * 1deg)) translateZ(300px);
+      }
+      .banner .content h1 {
+        text-align: center;
+        width: 100%;
+        text-shadow: 0 10px 20px #000;
+        font-size: 7em;
+      }
+      .banner .content .author {
+        color: #fff;
+        padding: 20px;
+        text-shadow: 0 10px 20px #000;
+        z-index: 2;
+        max-width: unset;
+        width: 100%;
+        text-align: center;
+        padding: 0 30px;
+      }
+    }
+
+    @media screen and (max-width: 767px) {
+      .banner .slider {
+        width: 100px;
+        height: 150px;
+        left: calc(50% - 50px);
+      }
+      .banner .slider .item {
+        transform: rotateY(calc((var(--position) - 1) * (360 / var(--quantity)) * 1deg)) translateZ(180px);
+      }
+      .banner .content h1 {
+        font-size: 5em;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- FIRST BANNER (Dragon Carousel) -->
+  <div class="banner">
+    <div class="slider" style="--quantity: 10">
+      <div class="item" style="--position: 1" data-title="Snow White" data-desc="The mighty red dragon soaring through the skies.">
+        <img src="images/b1.jpg" alt="">
+      </div>
+      <div class="item" style="--position: 2" data-title="Emerald" data-desc="There is Nothing More Precious Than A Green Angel Like You">
+        <img src="images/b2.jpg" alt="">
+      </div>
+      <div class="item" style="--position: 3" data-title="Ruby" data-desc="The Red Angel Of My Heart">
+        <img src="images/b3.png" alt="">
+      </div>
+      <div class="item" style="--position: 4" data-title="Sapphire" data-desc="A mystical dragon flying above the clouds.">
+        <img src="images/b4.png" alt="">
+      </div>
+      <div class="item" style="--position: 5" data-title="Blossom" data-desc="The golden dragon protecting the temple.">
+        <img src="images/b5.jpg" alt="">
+      </div>
+      <div class="item" style="--position: 6" data-title="Aquaria" data-desc="An icy dragon in the frozen lands.">
+        <img src="images/b6.png" alt="">
+      </div>
+      <div class="item" style="--position: 7" data-title="Diana" data-desc="A dragon hidden within enchanted woods.">
+        <img src="images/b7.jpg" alt="">
+      </div>
+      <div class="item" style="--position: 8" data-title="Princess Of Alamin" data-desc="The desert dragon with glowing eyes.">
+        <img src="images/b8.jpg" alt="">
+      </div>
+      <div class="item" style="--position: 9" data-title="Allure" data-desc="Twin-headed dragon of ancient myths.">
+        <img src="images/b9.jpg" alt="">
+      </div>
+      <div class="item" style="--position: 10" data-title="Rainbow" data-desc="The ancient dragon of legends.">
+        <img src="images/b10.png" alt="">
+      </div>
+    </div>
+
+    <div class="content">
+      <h1 data-content="NUSRAT TONDRA">NUSRAT TONDRA</h1>
+      <div class="author">
+        <h2>House-2</h2>
+        <p><b>Mirpur-2, Dhaka-1216</b></p>
+        <p>A Simple Girl Trying To Grow Her Career</p>
+      </div>
+      <div class="model"></div>
+    </div>
+  </div>
+
+  <!-- FULLSCREEN MODAL -->
+  <div class="fullscreen" id="fullscreen">
+    <span class="close-btn" id="closeBtn">&times;</span>
+    <img id="fullscreenImg" src="" alt="">
+    <div class="info-box">
+      <h2 id="imgTitle"></h2>
+      <p id="imgDesc"></p>
+    </div>
+  </div>
+
+  <!-- SECOND BANNER (Dress Gallery) -->
+  <section class="dress-banner">
+  <h1>Choose Your Style</h1>
+  <div class="dress-grid">
+    <a href="dress.html?folder=red" class="dress-card red"><span>Red</span></a>
+    <a href="dress.html?folder=white" class="dress-card white"><span>White</span></a>
+    <a href="dress.html?folder=green" class="dress-card green"><span>Green</span></a>
+    <a href="dress.html?folder=blue" class="dress-card blue"><span>Blue</span></a>
+    <a href="dress.html?folder=black" class="dress-card black"><span>Black</span></a>
+    <a href="dress.html?folder=yellow" class="dress-card yellow"><span>Yellow</span></a>
+    <a href="dress.html?folder=pink" class="dress-card pink"><span>Pink</span></a>
+    <a href="dress.html?folder=cyan" class="dress-card cyan"><span>Cyan</span></a>
+    <a href="dress.html?folder=colorful" class="dress-card colorful"><span>Colorful</span></a>
+    <a href="dress.html?folder=all" class="dress-card all"><span>All</span></a>
+  </div>
+</section>
+
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const items = document.querySelectorAll(".slider .item");
+      const fullscreen = document.getElementById("fullscreen");
+      const fullscreenImg = document.getElementById("fullscreenImg");
+      const imgTitle = document.getElementById("imgTitle");
+      const imgDesc = document.getElementById("imgDesc");
+      const closeBtn = document.getElementById("closeBtn");
+      const slider = document.querySelector(".slider");
+
+      // Open fullscreen
+      items.forEach(item => {
+        item.addEventListener("click", () => {
+          const img = item.querySelector("img");
+          fullscreenImg.src = img.src;
+          imgTitle.textContent = item.dataset.title || "Untitled";
+          imgDesc.textContent = item.dataset.desc || "No description available.";
+          fullscreen.style.display = "flex";
+        });
+      });
+
+      // Close fullscreen
+      closeBtn.addEventListener("click", () => {
+        fullscreen.style.display = "none";
+      });
+      fullscreen.addEventListener("click", (e) => {
+        if (e.target === fullscreen) fullscreen.style.display = "none";
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") fullscreen.style.display = "none";
+      });
+
+      // Move carousel away when scrolling
+      window.addEventListener("scroll", () => {
+        let scrollY = window.scrollY;
+        if (scrollY > 100) {
+          slider.style.transform = "translateY(-200px) scale(0.8)";
+          slider.style.opacity = "0";
+        } else {
+          slider.style.transform = "translateY(0) scale(1)";
+          slider.style.opacity = "1";
+        }
+      });
+    });
+  </script>
+</body>
+</html>
